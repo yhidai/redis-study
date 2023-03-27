@@ -1,0 +1,58 @@
+version: "3"
+services:
+  master:
+    image: redis:7.0.10
+    ports:
+      - 6380:6379
+    volumes:
+      - $PWD/redis-master.conf:/usr/local/etc/redis/redis-master.conf
+    command: redis-server /usr/local/etc/redis/redis-master.conf
+  replica:
+    image: redis:7.0.10
+    ports:
+      - 6381:6379
+    volumes:
+      - $PWD/redis-replica.conf:/usr/local/etc/redis/redis-replica.conf
+    command: redis-server /usr/local/etc/redis/redis-replica.conf
+  sentinel-1:
+    image: redis:7.0.10
+    ports:
+      - 5000:5000
+    env_file: ".env"
+    user: ${UID}:${GID}
+    volumes:
+      # - $PWD/sentinel-1.conf:/usr/local/etc/redis/sentinel-1.conf
+      # - $PWD/config/redis-sentinel:/etc/redis-config
+      - type: bind
+        source: $PWD/config/redis-sentinel
+        target: /etc/redis-config
+    # command: redis-sentinel /usr/local/etc/redis/sentinel-1.conf
+    command: redis-sentinel /etc/redis-config/sentinel-1.conf
+  sentinel-2:
+    image: redis:7.0.10
+    ports:
+      - 5001:5000
+    env_file: ".env"
+    user: ${UID}:${GID}
+    volumes:
+      # - $PWD/sentinel-2.conf:/usr/local/etc/redis/sentinel-2.conf
+      # - $PWD/config/redis-sentinel:/etc/redis-config
+      - type: bind
+        source: $PWD/config/redis-sentinel
+        target: /etc/redis-config
+    # command: redis-sentinel /usr/local/etc/redis/sentinel-2.conf
+    command: redis-sentinel /etc/redis-config/sentinel-2.conf
+  sentinel-3:
+    image: redis:7.0.10
+    ports:
+      - 5002:5000
+    env_file: ".env"
+    user: ${UID}:${GID}
+    volumes:
+      - type: bind
+        source: $PWD/config/redis-sentinel
+        target: /etc/redis-config
+      # - $PWD/sentinel-3.conf:/usr/local/etc/redis/sentinel-3.conf
+      # - $PWD/config/redis-sentinel:/etc/redis-config
+    # command: redis-sentinel /usr/local/etc/redis/sentinel-3.conf
+    command: redis-sentinel /etc/redis-config/sentinel-3.conf
