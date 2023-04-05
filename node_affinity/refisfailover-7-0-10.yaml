@@ -1,0 +1,64 @@
+apiVersion: databases.spotahome.com/v1
+kind: RedisFailover
+metadata:
+  name: redisfailover-v7-0-10
+spec:
+  sentinel:
+    replicas: 3
+    image: redis:7.0.10
+    imagePullPolicy: IfNotPresent
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: accountid
+                  operator: In
+                  values:
+                    - '71000000002'
+                - key: service
+                  operator: In
+                  values:
+                    - redis
+                - key: redis
+                  operator: In
+                  values:
+                    - '1'
+                - key: worker
+                  operator: Exists
+  redis:
+    replicas: 1
+    image: redis:7.0.10
+    imagePullPolicy: IfNotPresent
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: accountid
+                  operator: In
+                  values:
+                    - '71000000002'
+                - key: service
+                  operator: In
+                  values:
+                    - redis
+                - key: redis
+                  operator: In
+                  values:
+                    - '1'
+                - key: worker
+                  operator: Exists
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                    - redisfailover-v7-0-10
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                    - redis
+            topologyKey: kubernetes.io/hostname
