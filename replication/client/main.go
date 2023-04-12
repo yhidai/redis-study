@@ -1,53 +1,44 @@
 package main
 
 import (
-    "context"
-    "github.com/redis/go-redis/v9"
-    "fmt"
+	"context"
+	"fmt"
+
+	"github.com/redis/go-redis/v9"
 )
 
 var ctx = context.Background()
 
 func main() {
-	rdb := redis.NewFailoverClusterClient(
+	rdb := redis.NewFailoverClient(
 		&redis.FailoverOptions{
-			MasterName: "",
-			SentinelAddrs: []string{},
-			ClientName: "",
-			SentinelUsername: "",
-			SentinelPassword: "",
-			Username: "",
-			Password: "",
+			MasterName: "mymaster",
+			SentinelAddrs: []string{
+				"192.168.120.31:26379",
+				"192.168.120.32:26379",
+			},
 		},
 	)
 
+	err := rdb.Set(ctx, "key", "value", 0).Err()
+	if err != nil {
+		panic(err)
+	}
 
-    // rdb := redis.NewClient(&redis.Options{
+	val, err := rdb.Get(ctx, "key").Result()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("key", val)
 
-    //     Addr:     "localhost:6379",
-    //     Password: "", // no password set
-    //     DB:       0,  // use default DB
-    // })
-
-    err := rdb.Set(ctx, "key", "value", 0).Err()
-    if err != nil {
-        panic(err)
-    }
-
-    val, err := rdb.Get(ctx, "key").Result()
-    if err != nil {
-        panic(err)
-    }
-    fmt.Println("key", val)
-
-    val2, err := rdb.Get(ctx, "key2").Result()
-    if err == redis.Nil {
-        fmt.Println("key2 does not exist")
-    } else if err != nil {
-        panic(err)
-    } else {
-        fmt.Println("key2", val2)
-    }
-    // Output: key value
-    // key2 does not exist
+	val2, err := rdb.Get(ctx, "key2").Result()
+	if err == redis.Nil {
+		fmt.Println("key2 does not exist")
+	} else if err != nil {
+		panic(err)
+	} else {
+		fmt.Println("key2", val2)
+	}
+	// Output: key value
+	// key2 does not exist
 }
