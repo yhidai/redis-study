@@ -27,6 +27,13 @@ spec:
                 - key: worker
                   operator: Exists
   redis:
+    # command:
+    #   - "redis-server"
+    #   - "/redis/redis.conf"
+    #   - "--protected-mode"
+    #   - "no"
+    #   - "--replica-announce-ip"
+    #   - "192.168.120.*"
     replicas: 1
     image: redis:7.0.10
     imagePullPolicy: IfNotPresent
