@@ -1,0 +1,36 @@
+# dev:
+#   redis-client:
+#     image: okteto/golang:1.20
+#     autocreate: true
+#     workdir: /work
+#     command: ["bash"]
+#     volumes:
+#       - /go/pkg/                # persist go dependencies
+#       - /root/.cache/go-build/  # persist go build cache
+#       - /root/.vscode-server    # persist vscode extensions
+#     securityContext:
+#       capabilities:
+#         add:
+#         - SYS_PTRACE            # required by the go debugger
+#     persistentVolume:
+#       enabled: true
+#     # serviceAccount: cluster-admin
+# namespace: default
+dev:
+  redis-operator-workspace:
+    image: okteto/golang:1.17
+    autocreate: true
+    workdir: /okteto
+    command: ["bash"]
+    volumes:
+      - /go/pkg/                # persist go dependencies
+      - /root/.cache/go-build/  # persist go build cache
+      - /root/.vscode-server    # persist vscode extensions
+    securityContext:
+      capabilities:
+        add:
+        - SYS_PTRACE            # required by the go debugger
+    persistentVolume:
+      enabled: true
+    serviceAccount: dev-ot-redis-operator
+namespace: redis-operator-system

@@ -9,14 +9,11 @@ import (
 
 var ctx = context.Background()
 
-
 func main() {
-	rdb := redis.NewFailoverClient(
-		&redis.FailoverOptions{
-			MasterName: "mymaster",
-			SentinelAddrs: []string{
-				"192.168.120.31:26379",
-				"192.168.120.32:26379",
+	rdb := redis.NewClusterClient(
+		&redis.ClusterOptions{
+			Addrs: []string{
+				"10.41.0.156:32533",
 			},
 		},
 	)
